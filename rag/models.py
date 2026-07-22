@@ -7,6 +7,11 @@ class Document:
     text: str
 
 @dataclass
+class Section:
+    heading: str
+    text: str
+
+@dataclass
 class Chunk:
     id: str
     document_name: str

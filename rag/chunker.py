@@ -45,25 +45,28 @@ def chunk_section(
 
 def chunk_document(
     document: Document,
-    chunk_size=500,
-    overlap=100,
-):
+    chunk_size: int = 500,
+    overlap: int = 100,
+) -> list[Chunk]:
+    """
+    Splits a document into semantic sections and then chunks each section.
+    """
 
-    sections = split_into_sections(document.text)
+    sections = split_into_sections(document)
 
     chunks = []
 
     chunk_number = 1
 
-    for section_name, section_text in sections:
+    for section in sections:
 
         section_chunks = chunk_section(
-            document.filename,
-            section_name,
-            section_text,
-            chunk_size,
-            overlap,
-            chunk_number,
+            document_name=document.filename,
+            section_name=section.heading,
+            text=section.text,
+            chunk_size=chunk_size,
+            overlap=overlap,
+            start_chunk_number=chunk_number,
         )
 
         chunks.extend(section_chunks)
