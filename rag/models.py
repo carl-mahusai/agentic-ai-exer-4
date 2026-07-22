@@ -43,3 +43,9 @@ class RetrievedChunk(BaseModel):
     chunk_number: int
     text: str
     distance: float
+
+
+class RAGContext(BaseModel):
+    rewritten_query: str
+    knowledge_base: str
+    context: str
