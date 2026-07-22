@@ -100,4 +100,12 @@ async def get_history_text(
                 f"{role.capitalize()}: {content}"
             )
 
-    return "\n".join(history)
+    # return "\n".join(history)
+
+    history_text = "\n".join(history)
+
+    print("===== RAG HISTORY =====")
+    print(history_text)
+    print("=======================")
+
+    return history_text
