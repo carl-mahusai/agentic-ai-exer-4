@@ -8,7 +8,7 @@ async def route_query(
     query: str,
 ) -> RouteDecision:
 
-    result = Runner.run(
+    result = await Runner.run(
         router_agent,
         query,
     )
