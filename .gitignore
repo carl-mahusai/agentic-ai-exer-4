@@ -3,3 +3,5 @@ __pycache__/
 .venv/
 
 sessions.db*
+
+vector_db/

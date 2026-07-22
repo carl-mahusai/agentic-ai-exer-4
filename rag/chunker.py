@@ -1,5 +1,5 @@
 from rag.models import Document, Chunk
-from rag.util import split_into_sections
+from rag.split_sections import split_into_sections
 import uuid
 
 
