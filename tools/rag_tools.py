@@ -19,6 +19,6 @@ async def search_knowledge_base(
         user_query=user_query,
     )
 
-    print(result)
+    # print(result)
 
     return result.context
