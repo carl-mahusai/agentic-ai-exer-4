@@ -29,7 +29,6 @@ class RAGService:
 
     def retrieve(
         self,
-        history: str,
         user_query: str,
         top_k: int = 5,
     ) -> RAGContext:
@@ -38,6 +37,8 @@ class RAGService:
         # Step 1
         # Rewrite the query
         #
+
+        history = self._get_history()
 
         rewritten = rewrite_query(
             history=history,
@@ -77,3 +78,12 @@ class RAGService:
             knowledge_base=decision.knowledge_base.value,
             context=context,
         )
+
+    def _get_history(self) -> str:
+        """
+        Returns the recent conversation history.
+
+        Placeholder implementation.
+        """
+
+        return ""
