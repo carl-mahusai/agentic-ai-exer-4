@@ -2,6 +2,14 @@
 
 pip install -r requirements.txt
 
+from the root run
+
+```
+python -m rag.ingest
+```
+
+to build the db
+
 python app.py
 
 

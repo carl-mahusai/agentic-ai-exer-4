@@ -2,7 +2,7 @@ import chromadb
 from chromadb.api.models.Collection import Collection
 
 from rag.models import Chunk
-
+from rag.models import RetrievedChunk
 
 class VectorStore:
     """
@@ -102,3 +102,45 @@ class VectorStore:
         collection = self.get_collection(collection_name)
 
         return collection.count()
+
+
+    def search(
+        self,
+        collection_name: str,
+        query_embedding: list[float],
+        top_k: int = 5,
+    ) -> list[RetrievedChunk]:
+        """
+        Searches the specified collection for the most relevant chunks.
+        """
+
+        collection = self.get_collection(collection_name)
+
+        results = collection.query(
+            query_embeddings=[query_embedding],
+            n_results=top_k,
+        )
+
+        retrieved = []
+
+        documents = results["documents"][0]
+        metadatas = results["metadatas"][0]
+        distances = results["distances"][0]
+
+        for document, metadata, distance in zip(
+            documents,
+            metadatas,
+            distances,
+        ):
+
+            retrieved.append(
+                RetrievedChunk(
+                    document_name=metadata["document_name"],
+                    section=metadata["section"],
+                    chunk_number=metadata["chunk_number"],
+                    text=document,
+                    distance=distance,
+                )
+            )
+
+        return retrieved
