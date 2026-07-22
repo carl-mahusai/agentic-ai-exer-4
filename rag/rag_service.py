@@ -53,41 +53,68 @@ class RAGService:
         # Step 1
         # Rewrite the query
         #
-
+        print("<------------history start-------->")
         history = await self._get_history()
+        print(history)
+        print("<------------history end-------->")
 
-        rewritten = rewrite_query(
-            history=history,
-            query=user_query,
-        )
+        print("<------------rewritten start-------->")
+        try:
+            rewritten = await rewrite_query(
+                history=history,
+                query=user_query,
+            )
+        except Exception as e:
+            print(str(e))
 
+
+
+        print(rewritten)
+        print("<------------rewritten end-------->")
         #
         # Step 2
         # Route to a knowledge base
         #
+        print("<------------decision start-------->")
+        try:
+            decision = await route_query(
+                rewritten.rewritten_query,
+            )
+        except Exception as e:
+            print(str(e))
 
-        decision = route_query(
-            rewritten.rewritten_query,
-        )
-
+        print(decision)
+        print("<------------decision end-------->")
         #
         # Step 3
         # Retrieve matching chunks
         #
+        print("<------------chunks start-------->")
+        try:
+            chunks = retrieve_context(
+                store=self.store,
+                collection_name=decision.knowledge_base.value,
+                query=rewritten.rewritten_query,
+                top_k=top_k,
+            )
+        except Exception as e:
+            print(str(e))
 
-        chunks = retrieve_context(
-            store=self.store,
-            collection_name=decision.knowledge_base.value,
-            query=rewritten.rewritten_query,
-            top_k=top_k,
-        )
+        print(chunks)
+        print("<------------chunks end-------->")
 
         #
         # Step 4
         # Convert chunks into prompt text
         #
+        print("<------------context start-------->")
+        try:
+            context = format_context(chunks)
+        except Exception as e:
+            print(str(e))
 
-        context = format_context(chunks)
+        print(context)
+        print("<------------context end-------->")
 
         return RAGContext(
             rewritten_query=rewritten.rewritten_query,

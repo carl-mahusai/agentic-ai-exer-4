@@ -4,11 +4,11 @@ from rag.models import RouteDecision
 from rag.router import router_agent
 
 
-def route_query(
+async def route_query(
     query: str,
 ) -> RouteDecision:
 
-    result = Runner.run_sync(
+    result = Runner.run(
         router_agent,
         query,
     )
