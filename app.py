@@ -20,6 +20,8 @@ from openai.types.responses import ResponseTextDeltaEvent
 from agents_config import get_agent, get_persona_names
 from sessions import get_session, trim_session_history
 
+from tools.rag_tools import rag
+
 DEFAULT_USERNAME = "guest"
 
 
@@ -43,6 +45,8 @@ async def chat(message, history, username, persona, session_id):
         username=username,
         session_id=session_id,
     )
+
+    rag.set_session(session)
 
     agent = get_agent(persona)
 

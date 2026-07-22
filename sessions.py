@@ -1,4 +1,12 @@
 from agents.memory import SQLiteSession
+from agents.memory import SQLiteSession
+from agents.items import (
+    MessageInputItem,
+    MessageOutputItem,
+)
+from openai.types.responses import (
+    ResponseOutputMessage,
+)
 
 DB_PATH = "sessions.db"
 
@@ -30,3 +38,68 @@ async def trim_session_history(session: SQLiteSession) -> None:
 
     await session.clear_session()
     await session.add_items(recent_items)
+
+
+async def get_history_text(
+    session: SQLiteSession,
+    max_turns: int = 20,
+) -> str:
+    """
+    Convert the recent conversation history into a plain-text transcript.
+
+    This helper is shared by both the chatbot and the RAG pipeline.
+    """
+
+    items = await session.get_items(
+        limit=max_turns * 2,
+    )
+
+    history = []
+
+    for item in items:
+
+        #
+        # User message
+        #
+
+        if isinstance(item, MessageInputItem):
+
+            raw = item.raw_item
+
+            if (
+                isinstance(raw, dict)
+                and raw.get("role") == "user"
+            ):
+
+                content = raw.get("content")
+
+                if isinstance(content, str):
+                    history.append(
+                        f"User: {content}"
+                    )
+
+        #
+        # Assistant message
+        #
+
+        elif isinstance(item, MessageOutputItem):
+
+            raw = item.raw_item
+
+            if isinstance(raw, ResponseOutputMessage):
+
+                text = []
+
+                for part in raw.content:
+
+                    if hasattr(part, "text"):
+                        text.append(part.text)
+
+                if text:
+
+                    history.append(
+                        "Assistant: "
+                        + "".join(text)
+                    )
+
+    return "\n".join(history)

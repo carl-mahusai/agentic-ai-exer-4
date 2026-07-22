@@ -9,6 +9,10 @@ from rag.retriever import (
 )
 from rag.vectorstore import VectorStore
 
+from sessions import MAX_CONTEXT_ITEMS
+
+from sessions import get_history_text
+
 class RAGService:
 
     def __init__(self):
@@ -28,41 +32,16 @@ class RAGService:
 
     async def _get_history(
         self,
-        max_turns: int = 20,
+        max_turns: int = MAX_CONTEXT_ITEMS,
     ) -> str:
-        """
-        Returns the recent conversation history as plain text.
-        """
 
         if self.session is None:
             return ""
 
-        items = await self.session.get_items()
-
-        history = []
-
-        #
-        # Keep only the most recent turns.
-        #
-
-        for item in items[-max_turns:]:
-
-            role = getattr(item, "role", None)
-
-            if role is None and isinstance(item, dict):
-                role = item.get("role")
-
-            content = getattr(item, "content", None)
-
-            if content is None and isinstance(item, dict):
-                content = item.get("content")
-
-            if role and content:
-                history.append(
-                    f"{role.capitalize()}: {content}"
-                )
-
-        return "\n".join(history)
+        return await get_history_text(
+            session=self.session,
+            max_turns=max_turns,
+        )
 
     async def search(
         self,

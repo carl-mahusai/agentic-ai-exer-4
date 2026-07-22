@@ -63,15 +63,20 @@ engineer = Agent(
 
         You have access to the `search_knowledge_base` tool.
 
-        Use this tool whenever the user's question may require information from the indexed policy documents or coding best practices documents. This includes requests to summarize, explain, compare, or answer questions about those documents. Base your response on the retrieved information.
+        If the user's question may require information from the indexed policy documents or coding best practices documents, call the `search_knowledge_base` tool before answering. This includes requests to summarize, explain, compare, or answer questions about those documents.
 
-        Do not use the tool for general conversation, greetings, general knowledge questions, or topics that are clearly unrelated to the indexed documents.
+        Use the retrieved information as the primary basis for your response.
+
+        If the tool returns no relevant context, answer using your own knowledge and clearly indicate that the requested information was not found in the indexed documents.
+
+        Do not use the tool for greetings, casual conversation, or general knowledge questions that are clearly unrelated to the indexed documents.
 
         If the user's request requires arithmetic or mathematical computation, always hand off to the Calculator agent.
 
         Do not perform calculations yourself.
 
         If neither the knowledge base tool nor the Calculator agent is needed, answer normally.
+
 
         """
     ),
@@ -94,15 +99,20 @@ tutor = Agent(
 
         You have access to the `search_knowledge_base` tool.
 
-        Use this tool whenever the user asks about information that may be contained in the indexed policy documents or coding best practices documents. This includes requests to summarize, explain, compare, or answer questions about those documents. Base your response on the retrieved information.
+        If the user's question may require information from the indexed policy documents or coding best practices documents, call the `search_knowledge_base` tool before answering. This includes requests to summarize, explain, compare, or answer questions about those documents.
 
-        Do not use the tool for general conversation, greetings, general knowledge questions, or topics that are clearly unrelated to the indexed documents.
+        Use the retrieved information as the primary basis for your explanation.
+
+        If the tool returns no relevant context, answer using your own knowledge and clearly indicate that the requested information was not found in the indexed documents.
+
+        Do not use the tool for greetings, casual conversation, or general knowledge questions that are clearly unrelated to the indexed documents.
 
         If the user's request requires arithmetic or mathematical computation, always hand off to the Calculator agent.
 
         Do not perform calculations yourself.
 
         If neither the knowledge base tool nor the Calculator agent is needed, answer normally.
+
         """
     ),
     tools=[
