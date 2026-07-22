@@ -1,5 +1,9 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 from rag.loader import load_documents
 from rag.chunker import chunk_document
+from rag.embedder import generate_embedding, generate_embeddings
 from pathlib import Path
 import sys
 
@@ -18,8 +22,21 @@ for doc in docs:
 
     chunks = chunk_document(doc)
 
-    print(doc.filename)
+    # print(doc.filename)
 
-    print(len(chunks))
+    # print(len(chunks))
 
-    print(chunks)
+    # print(chunks)
+
+    # for chunk in chunks:
+
+    #     embedding = generate_embedding(chunk.text)
+
+    #     print(chunk.section)
+    #     print(len(embedding))
+
+    texts = [chunk.text for chunk in chunks]
+
+    embeddings = generate_embeddings(texts)
+
+    print(embeddings)
