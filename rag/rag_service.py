@@ -8,7 +8,7 @@ from rag.retriever import (
 from rag.vectorstore import VectorStore
 
 
-class RAGAgent:
+class RAGService:
     """
     Coordinates the RAG pipeline.
 
