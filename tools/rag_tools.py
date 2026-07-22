@@ -13,8 +13,12 @@ async def search_knowledge_base(
     Search the indexed policy and coding knowledge bases.
     """
 
+    print("calling search knowledge base")
+
     result = await rag.search(
         user_query=user_query,
     )
+
+    print(result)
 
     return result.context

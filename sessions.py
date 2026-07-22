@@ -104,8 +104,8 @@ async def get_history_text(
 
     history_text = "\n".join(history)
 
-    print("===== RAG HISTORY =====")
-    print(history_text)
-    print("=======================")
+    # print("===== RAG HISTORY =====")
+    # print(history_text)
+    # print("=======================")
 
     return history_text
