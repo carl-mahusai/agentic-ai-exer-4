@@ -14,7 +14,7 @@ def search_knowledge_base(
     Search the indexed policy and coding knowledge bases.
     """
 
-    result = rag.retrieve(
+    result = rag.search(
         user_query=user_query,
     )
 

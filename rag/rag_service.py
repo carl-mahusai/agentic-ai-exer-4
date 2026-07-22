@@ -1,3 +1,5 @@
+from agents.memory import SQLiteSession
+
 from rag.models import RAGContext
 from rag.rewriter import rewrite_query
 from rag.router_service import route_query
@@ -7,27 +9,62 @@ from rag.retriever import (
 )
 from rag.vectorstore import VectorStore
 
-
 class RAGService:
-    """
-    Coordinates the RAG pipeline.
-
-    Responsibilities:
-    - Rewrite the user's query if necessary.
-    - Route the query to the correct knowledge base.
-    - Retrieve relevant document chunks.
-    """
 
     def __init__(self):
 
-        #
-        # One ChromaDB connection for the lifetime
-        # of the application.
-        #
-
         self.store = VectorStore()
+        self.session: SQLiteSession | None = None
 
-    def retrieve(
+    def set_session(
+        self,
+        session: SQLiteSession,
+    ) -> None:
+        """
+        Sets the active chat session for the current request.
+        """
+
+        self.session = session
+
+    async def _get_history(
+        self,
+        max_turns: int = 20,
+    ) -> str:
+        """
+        Returns the recent conversation history as plain text.
+        """
+
+        if self.session is None:
+            return ""
+
+        items = await self.session.get_items()
+
+        history = []
+
+        #
+        # Keep only the most recent turns.
+        #
+
+        for item in items[-max_turns:]:
+
+            role = getattr(item, "role", None)
+
+            if role is None and isinstance(item, dict):
+                role = item.get("role")
+
+            content = getattr(item, "content", None)
+
+            if content is None and isinstance(item, dict):
+                content = item.get("content")
+
+            if role and content:
+                history.append(
+                    f"{role.capitalize()}: {content}"
+                )
+
+        return "\n".join(history)
+
+    async def search(
         self,
         user_query: str,
         top_k: int = 5,
@@ -38,7 +75,7 @@ class RAGService:
         # Rewrite the query
         #
 
-        history = self._get_history()
+        history = await self._get_history()
 
         rewritten = rewrite_query(
             history=history,
@@ -78,12 +115,3 @@ class RAGService:
             knowledge_base=decision.knowledge_base.value,
             context=context,
         )
-
-    def _get_history(self) -> str:
-        """
-        Returns the recent conversation history.
-
-        Placeholder implementation.
-        """
-
-        return ""
