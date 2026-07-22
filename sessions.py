@@ -1,12 +1,5 @@
 from agents.memory import SQLiteSession
-from agents.memory import SQLiteSession
-from agents.items import (
-    MessageInputItem,
-    MessageOutputItem,
-)
-from openai.types.responses import (
-    ResponseOutputMessage,
-)
+
 
 DB_PATH = "sessions.db"
 
@@ -45,9 +38,11 @@ async def get_history_text(
     max_turns: int = 20,
 ) -> str:
     """
-    Convert the recent conversation history into a plain-text transcript.
+    Convert the recent conversation history into plain text.
 
-    This helper is shared by both the chatbot and the RAG pipeline.
+    This helper intentionally avoids depending on the internal
+    item classes of the Agents SDK so it remains compatible across
+    SDK versions.
     """
 
     items = await session.get_items(
@@ -59,47 +54,50 @@ async def get_history_text(
     for item in items:
 
         #
-        # User message
+        # SQLiteSession may return SDK objects or dictionaries.
         #
 
-        if isinstance(item, MessageInputItem):
+        if hasattr(item, "to_input_item"):
+            item = item.to_input_item()
 
-            raw = item.raw_item
+        if not isinstance(item, dict):
+            continue
 
-            if (
-                isinstance(raw, dict)
-                and raw.get("role") == "user"
-            ):
+        role = item.get("role")
 
-                content = raw.get("content")
+        content = item.get("content")
 
-                if isinstance(content, str):
-                    history.append(
-                        f"User: {content}"
-                    )
+        if not role or not content:
+            continue
 
         #
-        # Assistant message
+        # Flatten the Responses API content format.
         #
 
-        elif isinstance(item, MessageOutputItem):
+        if isinstance(content, list):
 
-            raw = item.raw_item
+            text_parts = []
 
-            if isinstance(raw, ResponseOutputMessage):
+            for part in content:
 
-                text = []
+                if isinstance(part, dict):
 
-                for part in raw.content:
+                    if part.get("type") == "input_text":
+                        text_parts.append(
+                            part.get("text", "")
+                        )
 
-                    if hasattr(part, "text"):
-                        text.append(part.text)
+                    elif part.get("type") == "output_text":
+                        text_parts.append(
+                            part.get("text", "")
+                        )
 
-                if text:
+            content = "".join(text_parts)
 
-                    history.append(
-                        "Assistant: "
-                        + "".join(text)
-                    )
+        if isinstance(content, str) and content.strip():
+
+            history.append(
+                f"{role.capitalize()}: {content}"
+            )
 
     return "\n".join(history)
