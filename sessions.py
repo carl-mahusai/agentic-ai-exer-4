@@ -82,15 +82,10 @@ async def get_history_text(
 
                 if isinstance(part, dict):
 
-                    if part.get("type") == "input_text":
-                        text_parts.append(
-                            part.get("text", "")
-                        )
+                    text = part.get("text")
 
-                    elif part.get("type") == "output_text":
-                        text_parts.append(
-                            part.get("text", "")
-                        )
+                    if text:
+                        text_parts.append(text)
 
             content = "".join(text_parts)
 
