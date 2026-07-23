@@ -15,9 +15,11 @@ from sessions import get_history_text
 
 class RAGService:
 
-    def __init__(self):
-
-        self.store = VectorStore()
+    def __init__(
+        self,
+        db_path: str = "./vector_db",
+    ):
+        self.store = VectorStore(db_path=db_path)
         self.session: SQLiteSession | None = None
 
     def set_session(
